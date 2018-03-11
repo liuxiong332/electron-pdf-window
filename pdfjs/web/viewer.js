@@ -7410,10 +7410,11 @@ var pdfjsWebLibs;
         });
       }
       function webViewerInitialized() {
-        var file;
+        var file, headers;
         var queryString = document.location.search.substring(1);
         var params = parseQueryString(queryString);
         file = 'file' in params ? params.file : DEFAULT_URL;
+        headers = 'headers' in params ? JSON.parse(params.headers) : {};        
         validateFileURL(file);
         var waitForBeforeOpening = [];
         var appConfig = PDFViewerApplication.appConfig;
@@ -7557,13 +7558,13 @@ var pdfjsWebLibs;
           PDFViewerApplication.eventBus.dispatch('download');
         });
         Promise.all(waitForBeforeOpening).then(function () {
-          webViewerOpenFileViaURL(file);
+          webViewerOpenFileViaURL(file, { httpHeaders: headers });
         }).catch(function (reason) {
           PDFViewerApplication.error(mozL10n.get('loading_error', null, 'An error occurred while opening.'), reason);
         });
       }
       var webViewerOpenFileViaURL;
-      webViewerOpenFileViaURL = function webViewerOpenFileViaURL(file) {
+      webViewerOpenFileViaURL = function webViewerOpenFileViaURL(file, options) {
         if (file && file.lastIndexOf('file:', 0) === 0) {
           // file:-scheme. Load the contents in the main thread because QtWebKit
           // cannot load file:-URLs in a Web Worker. file:-URLs are usually loaded
@@ -7583,7 +7584,7 @@ var pdfjsWebLibs;
           return;
         }
         if (file) {
-          PDFViewerApplication.open(file);
+          PDFViewerApplication.open(file, options);
         }
       };
       function webViewerPageRendered(e) {
