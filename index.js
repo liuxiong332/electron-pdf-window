@@ -74,7 +74,7 @@ class PDFWindow extends BrowserWindow {
   loadURL (url, options) {
     super.loadURL(`file://${
       path.join(__dirname, 'pdfjs', 'web', 'viewer.html')}?file=${
-        decodeURIComponent(url)}&headers=${JSON.stringify(options.headers || {})}`, options)
+        encodeURIComponent(url)}&headers=${JSON.stringify(options.headers || {})}`, options)
   }
 }
 
