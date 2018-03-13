@@ -1959,10 +1959,12 @@ var pdfjsWebLibs;
       // Attaching to the application event bus to dispatch events to the DOM for
       // backwards viewer API compatibility.
       function attachDOMEventsToEventBus(eventBus) {
+        var ipc = require('electron').ipcRenderer;
         eventBus.on('documentload', function () {
           var event = document.createEvent('CustomEvent');
           event.initCustomEvent('documentload', true, true, {});
           window.dispatchEvent(event);
+          ipc.send('documentload');
         });
         eventBus.on('pagerendered', function (e) {
           var event = document.createEvent('CustomEvent');
@@ -1971,6 +1973,7 @@ var pdfjsWebLibs;
             cssTransform: e.cssTransform
           });
           e.source.div.dispatchEvent(event);
+          ipc.send('pagerendered');          
         });
         eventBus.on('textlayerrendered', function (e) {
           var event = document.createEvent('CustomEvent');
@@ -1992,6 +1995,7 @@ var pdfjsWebLibs;
           var event = document.createEvent('CustomEvent');
           event.initCustomEvent('pagesloaded', true, true, { pagesCount: e.pagesCount });
           e.source.container.dispatchEvent(event);
+          ipc.send('pagesloaded');                    
         });
         eventBus.on('scalechange', function (e) {
           var event = document.createEvent('UIEvents');
